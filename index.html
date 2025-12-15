@@ -1,22 +1,176 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Prueba Firebase</title>
+  <title>¿Quién me llamó? | Perú</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 420px;
+      margin: 60px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    p.subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    button.buscar {
+      background: #007bff;
+      color: white;
+    }
+
+    button.reportar {
+      background: #dc3545;
+      color: white;
+    }
+
+    #resultado {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 15px;
+    }
+
+    .ok {
+      color: green;
+    }
+
+    .warn {
+      color: #c0392b;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #777;
+      margin-top: 25px;
+    }
+  </style>
 </head>
 <body>
 
-<h1>Prueba Firebase</h1>
+  <div class="container">
+    <h1>¿Quién me llamó?</h1>
+    <p class="subtitle">Consulta y reporta números telefónicos en Perú</p>
 
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <input id="numero" placeholder="Ej: 987654321" maxlength="9">
 
-<script>
-  if (typeof firebase === "undefined") {
-    document.body.innerHTML += "<p>❌ Firebase NO cargó</p>";
-  } else {
-    document.body.innerHTML += "<p>✅ Firebase SÍ cargó</p>";
-  }
-</script>
+    <button class="buscar" onclick="buscar()">Buscar número</button>
+    <button class="reportar" onclick="reportar()">Reportar número</button>
+
+    <div id="resultado"></div>
+
+    <footer>
+      Reportes hechos por usuarios. No afirmamos delitos.
+    </footer>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD2C9o9wEGXczI6aNeJQdgIG_t5qDCeBGQ",
+      authDomain: "numeros-peru-15305.firebaseapp.com",
+      projectId: "numeros-peru-15305",
+      storageBucket: "numeros-peru-15305.firebasestorage.app",
+      messagingSenderId: "816575916782",
+      appId: "1:816575916782:web:91c5e521e573e3db8ba1ff"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function validar(numero) {
+      return /^[0-9]{9}$/.test(numero);
+    }
+
+    function buscar() {
+      const numero = document.getElementById("numero").value.trim();
+      const res = document.getElementById("resultado");
+
+      if (!validar(numero)) {
+        res.innerHTML = "<span class='warn'>Número inválido</span>";
+        return;
+      }
+
+      res.innerHTML = "Buscando...";
+
+      db.collection("numeros").doc(numero).get()
+        .then(doc => {
+          if (doc.exists) {
+            res.innerHTML = "<span class='warn'>⚠️ Este número ha sido reportado</span>";
+          } else {
+            res.innerHTML = "<span class='ok'>✅ No hay reportes de este número</span>";
+          }
+        })
+        .catch(err => {
+          res.innerHTML = "<span class='warn'>Error al buscar</span>";
+          console.error(err);
+        });
+    }
+
+    function reportar() {
+      const numero = document.getElementById("numero").value.trim();
+      const res = document.getElementById("resultado");
+
+      if (!validar(numero)) {
+        res.innerHTML = "<span class='warn'>Número inválido</span>";
+        return;
+      }
+
+      db.collection("numeros").doc(numero).set({
+        reportado: true,
+        fecha: new Date()
+      })
+      .then(() => {
+        res.innerHTML = "<span class='warn'>Número reportado correctamente</span>";
+      })
+      .catch(err => {
+        res.innerHTML = "<span class='warn'>Error al reportar</span>";
+        console.error(err);
+      });
+    }
+  </script>
 
 </body>
 </html>
