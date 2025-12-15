@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>¿Quién me llamó? Perú</title>
+</head>
+<body>
+
+<h1>¿Quién me llamó?</h1>
+
+<input id="phone" placeholder="Ej: 987654321" maxlength="9">
+<button onclick="buscar()">Buscar</button>
+
+<p id="resultado"></p>
+
+<button onclick="reportar()">Reportar este número</button>
+
+<script src="datos.js"></script>
+<script>
+function buscar() {
+  const numero = document.getElementById("phone").value;
+
+  if (!/^[0-9]{9}$/.test(numero)) {
+    document.getElementById("resultado").innerText =
+      "❌ Solo números de Perú (9 dígitos).";
+    return;
+  }
+
+  const estado = baseDatos[numero];
+
+  if (estado === "PELIGRO") {
+    document.getElementById("resultado").innerText =
+      "⚠️ Número reportado muchas veces. Riesgo ALTO.";
+  } else if (estado === "NORMAL") {
+    document.getElementById("resultado").innerText =
+      "✅ Número sin reportes negativos.";
+  } else {
+    document.getElementById("resultado").innerText =
+      "ℹ️ Número aún no reportado en Perú.";
+  }
+}
+
+function reportar() {
+  const numero = document.getElementById("phone").value;
+
+  if (!/^[0-9]{9}$/.test(numero)) {
+    alert("Número inválido");
+    return;
+  }
+
+  baseDatos[numero] = "PELIGRO";
+  alert("✅ Gracias por reportar. Número marcado como peligroso.");
+}
+</script>
+
+</body>
+</html>
