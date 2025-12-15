@@ -3,49 +3,89 @@
 <head>
   <meta charset="UTF-8">
   <title>¿Quién me llamó? Perú</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .box {
+      background: #020617;
+      padding: 20px;
+      border-radius: 10px;
+      width: 320px;
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .peligro {
+      color: #f87171;
+      margin-top: 10px;
+    }
+    .ok {
+      color: #4ade80;
+      margin-top: 10px;
+    }
+    .info {
+      color: #facc15;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
 
-<h1>¿Quién me llamó?</h1>
+<div class="box">
+  <h2>¿Quién me llamó?</h2>
 
-<input id="phone" placeholder="Ej: 987654321" maxlength="9">
-<button onclick="buscar()">Buscar</button>
+  <input id="phone" placeholder="Ej: 987654321" maxlength="9">
 
-<p id="resultado"></p>
+  <button onclick="buscar()">Buscar</button>
+  <button onclick="reportar()">Reportar número</button>
 
-<button onclick="reportar()">Reportar este número</button>
+  <div id="resultado"></div>
+</div>
 
 <script>
-let baseDatos = JSON.parse(localStorage.getItem("baseDatos")) || {
+let baseDatos = JSON.parse(localStorage.getItem("numerosPE")) || {
   "999999999": "PELIGRO",
   "987654321": "PELIGRO",
   "912345678": "NORMAL"
 };
 
 function guardar() {
-  localStorage.setItem("baseDatos", JSON.stringify(baseDatos));
+  localStorage.setItem("numerosPE", JSON.stringify(baseDatos));
 }
 
 function buscar() {
   const numero = document.getElementById("phone").value;
+  const res = document.getElementById("resultado");
 
   if (!/^[0-9]{9}$/.test(numero)) {
-    document.getElementById("resultado").innerText =
-      "❌ Solo números de Perú (9 dígitos).";
+    res.innerHTML = "<div class='info'>❌ Solo números de Perú (9 dígitos)</div>";
     return;
   }
 
-  const estado = baseDatos[numero];
-
-  if (estado === "PELIGRO") {
-    document.getElementById("resultado").innerText =
-      "⚠️ Número reportado muchas veces. Riesgo ALTO.";
-  } else if (estado === "NORMAL") {
-    document.getElementById("resultado").innerText =
-      "✅ Número sin reportes negativos.";
+  if (baseDatos[numero] === "PELIGRO") {
+    res.innerHTML = "<div class='peligro'>⚠️ Número reportado muchas veces. Riesgo ALTO.</div>";
+  } else if (baseDatos[numero] === "NORMAL") {
+    res.innerHTML = "<div class='ok'>✅ Número sin reportes negativos.</div>";
   } else {
-    document.getElementById("resultado").innerText =
-      "ℹ️ Número aún no reportado en Perú.";
+    res.innerHTML = "<div class='info'>ℹ️ Número aún no reportado en Perú.</div>";
   }
 }
 
@@ -59,43 +99,8 @@ function reportar() {
 
   baseDatos[numero] = "PELIGRO";
   guardar();
-  alert("✅ Gracias por reportar. Se guardó el reporte.");
-}
-</script>
-
-function buscar() {
-  const numero = document.getElementById("phone").value;
-
-  if (!/^[0-9]{9}$/.test(numero)) {
-    document.getElementById("resultado").innerText =
-      "❌ Solo números de Perú (9 dígitos).";
-    return;
-  }
-
-  const estado = baseDatos[numero];
-
-  if (estado === "PELIGRO") {
-    document.getElementById("resultado").innerText =
-      "⚠️ Número reportado muchas veces. Riesgo ALTO.";
-  } else if (estado === "NORMAL") {
-    document.getElementById("resultado").innerText =
-      "✅ Número sin reportes negativos.";
-  } else {
-    document.getElementById("resultado").innerText =
-      "ℹ️ Número aún no reportado en Perú.";
-  }
-}
-
-function reportar() {
-  const numero = document.getElementById("phone").value;
-
-  if (!/^[0-9]{9}$/.test(numero)) {
-    alert("Número inválido");
-    return;
-  }
-
-  baseDatos[numero] = "PELIGRO";
-  alert("✅ Gracias por reportar. Número marcado como peligroso.");
+  buscar();
+  alert("✅ Gracias. El número fue reportado.");
 }
 </script>
 
