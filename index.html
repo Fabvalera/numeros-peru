@@ -6,82 +6,108 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      min-height: 100vh;
       margin: 0;
-      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .container {
+      width: 100%;
       max-width: 420px;
-      margin: 60px auto;
-      background: white;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      background: #ffffff;
+      padding: 28px;
+      border-radius: 14px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     }
 
     h1 {
       text-align: center;
-      margin-bottom: 10px;
+      margin: 0;
+      font-size: 24px;
+      color: #1e3c72;
     }
 
-    p.subtitle {
+    .subtitle {
       text-align: center;
       color: #666;
       font-size: 14px;
-      margin-bottom: 20px;
+      margin: 8px 0 22px;
     }
 
     input {
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       font-size: 16px;
-      margin-bottom: 15px;
-      border-radius: 6px;
+      border-radius: 8px;
       border: 1px solid #ccc;
+      margin-bottom: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #2a5298;
     }
 
     button {
       width: 100%;
-      padding: 12px;
-      font-size: 16px;
+      padding: 14px;
+      font-size: 15px;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
+      font-weight: 600;
+    }
+
+    .buscar {
+      background: #2a5298;
+      color: #fff;
       margin-bottom: 10px;
     }
 
-    button.buscar {
-      background: #007bff;
-      color: white;
+    .buscar:hover {
+      background: #1e3c72;
     }
 
-    button.reportar {
-      background: #dc3545;
-      color: white;
+    .reportar {
+      background: #e74c3c;
+      color: #fff;
+    }
+
+    .reportar:hover {
+      background: #c0392b;
     }
 
     #resultado {
-      margin-top: 15px;
+      margin-top: 18px;
       text-align: center;
       font-size: 15px;
+      min-height: 22px;
     }
 
     .ok {
-      color: green;
+      color: #27ae60;
+      font-weight: 600;
     }
 
     .warn {
       color: #c0392b;
+      font-weight: 600;
     }
 
     footer {
+      margin-top: 25px;
       text-align: center;
       font-size: 12px;
-      color: #777;
-      margin-top: 25px;
+      color: #888;
     }
   </style>
 </head>
@@ -93,13 +119,13 @@
 
     <input id="numero" placeholder="Ej: 987654321" maxlength="9">
 
-    <button class="buscar" onclick="buscar()">Buscar número</button>
-    <button class="reportar" onclick="reportar()">Reportar número</button>
+    <button class="buscar" onclick="buscar()">🔍 Buscar número</button>
+    <button class="reportar" onclick="reportar()">🚨 Reportar número</button>
 
     <div id="resultado"></div>
 
     <footer>
-      Reportes hechos por usuarios. No afirmamos delitos.
+      Información aportada por usuarios. No afirmamos delitos.
     </footer>
   </div>
 
@@ -138,14 +164,13 @@
       db.collection("numeros").doc(numero).get()
         .then(doc => {
           if (doc.exists) {
-            res.innerHTML = "<span class='warn'>⚠️ Este número ha sido reportado</span>";
+            res.innerHTML = "<span class='warn'>⚠️ Número reportado por usuarios</span>";
           } else {
             res.innerHTML = "<span class='ok'>✅ No hay reportes de este número</span>";
           }
         })
-        .catch(err => {
+        .catch(() => {
           res.innerHTML = "<span class='warn'>Error al buscar</span>";
-          console.error(err);
         });
     }
 
@@ -165,9 +190,8 @@
       .then(() => {
         res.innerHTML = "<span class='warn'>Número reportado correctamente</span>";
       })
-      .catch(err => {
+      .catch(() => {
         res.innerHTML = "<span class='warn'>Error al reportar</span>";
-        console.error(err);
       });
     }
   </script>
