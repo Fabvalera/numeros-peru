@@ -15,8 +15,54 @@
 
 <button onclick="reportar()">Reportar este número</button>
 
-<script src="datos.js"></script>
 <script>
+let baseDatos = JSON.parse(localStorage.getItem("baseDatos")) || {
+  "999999999": "PELIGRO",
+  "987654321": "PELIGRO",
+  "912345678": "NORMAL"
+};
+
+function guardar() {
+  localStorage.setItem("baseDatos", JSON.stringify(baseDatos));
+}
+
+function buscar() {
+  const numero = document.getElementById("phone").value;
+
+  if (!/^[0-9]{9}$/.test(numero)) {
+    document.getElementById("resultado").innerText =
+      "❌ Solo números de Perú (9 dígitos).";
+    return;
+  }
+
+  const estado = baseDatos[numero];
+
+  if (estado === "PELIGRO") {
+    document.getElementById("resultado").innerText =
+      "⚠️ Número reportado muchas veces. Riesgo ALTO.";
+  } else if (estado === "NORMAL") {
+    document.getElementById("resultado").innerText =
+      "✅ Número sin reportes negativos.";
+  } else {
+    document.getElementById("resultado").innerText =
+      "ℹ️ Número aún no reportado en Perú.";
+  }
+}
+
+function reportar() {
+  const numero = document.getElementById("phone").value;
+
+  if (!/^[0-9]{9}$/.test(numero)) {
+    alert("Número inválido");
+    return;
+  }
+
+  baseDatos[numero] = "PELIGRO";
+  guardar();
+  alert("✅ Gracias por reportar. Se guardó el reporte.");
+}
+</script>
+
 function buscar() {
   const numero = document.getElementById("phone").value;
 
