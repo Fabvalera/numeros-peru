@@ -46,6 +46,7 @@
 </div>
 
 <script>
+// Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyA-n-48pQ75Wb6-tg1gjdEu-KNwwXr0gXI",
   authDomain: "numeros-peru.firebaseapp.com",
@@ -56,37 +57,43 @@ const firebaseConfig = {
   measurementId: "G-Q12R19TQ33"
 };
 
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 function buscar() {
   const num = phone.value;
-  if(!/^[0-9]{9}$/.test(num)) {
+  if (!/^[0-9]{9}$/.test(num)) {
     resultado.innerHTML = "<div class='info'>Número inválido</div>";
     return;
   }
 
-  db.collection("numeros").doc(num).get().then(doc=>{
-    if(doc.exists){
+  db.collection("numeros").doc(num).get().then(doc => {
+    if (doc.exists) {
       resultado.innerHTML = "<div class='peligro'>⚠️ Número reportado</div>";
     } else {
       resultado.innerHTML = "<div class='ok'>✅ Sin reportes</div>";
     }
+  }).catch(error => {
+    console.error("Error al obtener el documento:", error);
   });
 }
 
 function reportar() {
   const num = phone.value;
-  if(!/^[0-9]{9}$/.test(num)) return alert("Número inválido");
+  if (!/^[0-9]{9}$/.test(num)) return alert("Número inválido");
 
   db.collection("numeros").doc(num).set({
-    reportado:true,
-    fecha:new Date()
-  }).then(()=>{
+    reportado: true,
+    fecha: new Date()
+  }).then(() => {
     alert("Número reportado");
     buscar();
+  }).catch(error => {
+    console.error("Error al reportar el número:", error);
   });
 }
 </script>
+
 </body>
 </html>
